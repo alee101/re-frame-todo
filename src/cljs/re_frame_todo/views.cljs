@@ -12,15 +12,17 @@
 
 (defn todo-item []
   (let [editing (reagent/atom false)]
-    (fn [{:keys [id title]}]
+    (fn [{:keys [id title done]}]
       [:div
-       {:on-click #(reset! editing true)}
+       [:input {:type "checkbox"
+                :on-change #(re-frame/dispatch [:toggle-done id])}]
        (if @editing
          [todo-input {:title title
                       :on-save #(do
                                   (re-frame/dispatch [:save id %])
                                   (reset! editing false))}]
-         [:label title])])))
+         [:label {:style {:text-decoration (str (if done "line-through" "none"))}
+                  :on-click #(reset! editing true)} title])])))
 
 (defn todo-list []
   (let [todos @(re-frame/subscribe [:todos])]

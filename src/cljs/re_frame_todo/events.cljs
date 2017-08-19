@@ -11,3 +11,8 @@
  :save
  (fn [db [_ id title]]
    (assoc-in db [:todos id :title] title)))
+
+(re-frame/reg-event-db
+ :toggle-done
+ (fn [db [_ id]]
+   (update-in db [:todos id :done] not)))
