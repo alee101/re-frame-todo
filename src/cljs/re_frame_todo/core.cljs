@@ -14,10 +14,13 @@
 
 (defn mount-root []
   (re-frame/clear-subscription-cache!)
-  (reagent/render [views/main-panel]
+  (reagent/render [views/todo-app]
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
   (re-frame/dispatch-sync [:initialize-db])
   (dev-setup)
   (mount-root))
+
+(defn on-js-reload []
+  (init))

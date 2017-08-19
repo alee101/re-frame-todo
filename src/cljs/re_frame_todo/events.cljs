@@ -4,5 +4,10 @@
 
 (re-frame/reg-event-db
  :initialize-db
- (fn  [_ _]
+ (fn [_ _]
    db/default-db))
+
+(re-frame/reg-event-db
+ :save
+ (fn [db [_ id title]]
+   (assoc-in db [:todos id :title] title)))

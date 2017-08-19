@@ -1,4 +1,4 @@
 (ns re-frame-todo.db)
 
 (def default-db
-  {:name "re-frame"})
+  {:todos (sorted-map 1 {:id 1 :title "abc"} 2 {:id 2 :title "xyz"})})
