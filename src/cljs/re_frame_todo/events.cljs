@@ -33,3 +33,10 @@
  :set-filter
  (fn [db [_ filter-key]]
    (assoc db :showing filter-key)))
+
+(re-frame/reg-event-db
+ :clear-completed
+ (fn [db _]
+   (let [completed-todos (filter (fn [[id todo]] (:done todo)) (:todos db))]
+     (reduce (fn [acc id]
+               (update-in acc [:todos] dissoc id)) db (keys completed-todos)))))

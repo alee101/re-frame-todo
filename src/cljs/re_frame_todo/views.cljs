@@ -28,7 +28,7 @@
                   :on-click #(reset! editing true)} title])
        [:button {:on-click #(re-frame/dispatch [:delete-todo id])} "Delete"]])))
 
-(defn footer-control []
+(defn filter-control []
   (let [selected-filter (reagent/atom :all)
         build-filter-input (fn [[key label]]
                              [[:input {:type "radio"
@@ -42,6 +42,14 @@
       `[:div
         "Show: "
         ~@(mapcat build-filter-input [[:all "All"] [:active "Active"] [:completed "Completed"]])])))
+
+(defn footer-control []
+  (let [active-todos (filter (fn [[id todo]] (not (:done todo))) @(re-frame/subscribe [:visible-todos]))
+        active-todo-count (count active-todos)]
+    [:div
+     (str active-todo-count (if (= 1 active-todo-count) " item" " items") " left")
+     [filter-control]
+     [:button {:on-click #(re-frame/dispatch [:clear-completed])} "Clear completed"]]))
 
 (defn todo-list []
   (let [todos @(re-frame/subscribe [:visible-todos])]
