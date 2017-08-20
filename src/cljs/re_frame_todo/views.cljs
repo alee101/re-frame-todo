@@ -27,12 +27,28 @@
          [:label {:style {:text-decoration (str (if done "line-through" "none"))}
                   :on-click #(reset! editing true)} title])])))
 
+(defn footer-control []
+  (let [selected-filter (reagent/atom :all)
+        build-filter-input (fn [[key label]]
+                             [[:input {:type "radio"
+                                       :name "filter"
+                                       :value label
+                                       :checked (= @selected-filter key)
+                                       :on-change #(do (reset! selected-filter key)
+                                                       (re-frame/dispatch [:set-filter key]))}]
+                              [:label label]])]
+    (fn []
+      `[:div
+        "Show: "
+        ~@(mapcat build-filter-input [[:all "All"] [:active "Active"] [:completed "Completed"]])])))
+
 (defn todo-list []
-  (let [todos @(re-frame/subscribe [:todos])]
+  (let [todos @(re-frame/subscribe [:visible-todos])]
     [:div
      (map (fn [[id todo]] ^{:key id} [todo-item todo]) todos)
      [todo-input {:id "new-todo"
-                  :on-save #(re-frame/dispatch [:add-todo %])}]]))
+                  :on-save #(re-frame/dispatch [:add-todo %])}]
+     [footer-control]]))
 
 (defn todo-app []
   [todo-list])

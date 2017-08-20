@@ -23,3 +23,8 @@
  :toggle-done
  (fn [db [_ id]]
    (update-in db [:todos id :done] not)))
+
+(re-frame/reg-event-db
+ :set-filter
+ (fn [db [_ filter-key]]
+   (assoc db :showing filter-key)))
