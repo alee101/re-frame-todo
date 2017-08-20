@@ -3,12 +3,15 @@
             [re-frame.core :as re-frame]))
 
 (defn todo-input [{:keys [title on-save]}]
-  (let [val (reagent/atom title)]
-    (fn []
+  (let [val (reagent/atom title)
+        save #(do (on-save @val)
+                  (reset! val ""))]
+    (fn [input-props]
       [:input {:type "text"
+               :placeholder (when (empty? @val) "What needs to be done?")
                :value @val
                :on-change #(reset! val (-> % .-target .-value))
-               :on-key-down #(when (= (.-which %) 13) (on-save @val))}])))
+               :on-key-down #(when (= (.-which %) 13) (save))}])))
 
 (defn todo-item []
   (let [editing (reagent/atom false)]
@@ -27,7 +30,9 @@
 (defn todo-list []
   (let [todos @(re-frame/subscribe [:todos])]
     [:div
-     (map (fn [[id todo]] ^{:key id} [todo-item todo]) todos)]))
+     (map (fn [[id todo]] ^{:key id} [todo-item todo]) todos)
+     [todo-input {:id "new-todo"
+                  :on-save #(re-frame/dispatch [:add-todo %])}]]))
 
 (defn todo-app []
   [todo-list])

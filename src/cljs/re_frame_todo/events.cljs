@@ -8,6 +8,13 @@
    db/default-db))
 
 (re-frame/reg-event-db
+ :add-todo
+ (fn [db [_ new-todo-title]]
+   (let [next-id (inc (last (keys (:todos db))))
+         new-todo {:id next-id :title new-todo-title :done false}]
+     (assoc-in db [:todos next-id] new-todo))))
+
+(re-frame/reg-event-db
  :save
  (fn [db [_ id title]]
    (assoc-in db [:todos id :title] title)))
