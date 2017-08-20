@@ -25,7 +25,8 @@
                                   (re-frame/dispatch [:save id %])
                                   (reset! editing false))}]
          [:label {:style {:text-decoration (str (if done "line-through" "none"))}
-                  :on-click #(reset! editing true)} title])])))
+                  :on-click #(reset! editing true)} title])
+       [:button {:on-click #(re-frame/dispatch [:delete-todo id])} "Delete"]])))
 
 (defn footer-control []
   (let [selected-filter (reagent/atom :all)

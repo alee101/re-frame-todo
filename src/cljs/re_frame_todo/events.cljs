@@ -15,6 +15,11 @@
      (assoc-in db [:todos next-id] new-todo))))
 
 (re-frame/reg-event-db
+ :delete-todo
+ (fn [db [_ id]]
+   (update-in db [:todos] dissoc id)))
+
+(re-frame/reg-event-db
  :save
  (fn [db [_ id title]]
    (assoc-in db [:todos id :title] title)))
