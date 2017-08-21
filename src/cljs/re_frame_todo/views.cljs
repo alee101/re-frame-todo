@@ -18,14 +18,14 @@
     (fn [{:keys [id title done]}]
       [:div
        [:input {:type "checkbox"
+                :checked done
                 :on-change #(re-frame/dispatch [:toggle-done id])}]
        (if @editing
          [todo-input {:title title
-                      :on-save #(do
-                                  (re-frame/dispatch [:save id %])
-                                  (reset! editing false))}]
+                      :on-save #(do (re-frame/dispatch [:save id %])
+                                    (reset! editing false))}]
          [:label {:style {:text-decoration (str (if done "line-through" "none"))}
-                  :on-click #(reset! editing true)} title])
+                  :on-double-click #(reset! editing true)} title])
        [:button {:on-click #(re-frame/dispatch [:delete-todo id])} "Delete"]])))
 
 (defn filter-control []
@@ -44,20 +44,19 @@
         ~@(mapcat build-filter-input [[:all "All"] [:active "Active"] [:completed "Completed"]])])))
 
 (defn footer-control []
-  (let [active-todos (filter (fn [[id todo]] (not (:done todo))) @(re-frame/subscribe [:visible-todos]))
-        active-todo-count (count active-todos)]
+  (let [active-todo-count @(re-frame/subscribe [:active-todo-count])]
     [:div
      (str active-todo-count (if (= 1 active-todo-count) " item" " items") " left")
      [filter-control]
      [:button {:on-click #(re-frame/dispatch [:clear-completed])} "Clear completed"]]))
 
 (defn todo-list []
-  (let [todos @(re-frame/subscribe [:visible-todos])]
-    [:div
-     (map (fn [[id todo]] ^{:key id} [todo-item todo]) todos)
-     [todo-input {:id "new-todo"
-                  :on-save #(re-frame/dispatch [:add-todo %])}]
-     [footer-control]]))
+  [:div
+   (map (fn [todo] ^{:key (:id todo)} [todo-item todo]) @(re-frame/subscribe [:visible-todos]))])
 
 (defn todo-app []
-  [todo-list])
+  [:div
+   [todo-list]
+   [todo-input {:id "new-todo"
+                :on-save #(re-frame/dispatch [:add-todo %])}]
+   [footer-control]])

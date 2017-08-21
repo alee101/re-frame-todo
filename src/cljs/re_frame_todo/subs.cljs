@@ -3,11 +3,30 @@
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
- :visible-todos
+ :showing
  (fn [db]
-   (let [showing (:showing db)
-         filter-fn (case showing
+   (:showing db)))
+
+(re-frame/reg-sub
+ :todos
+ (fn [db]
+   (:todos db)))
+
+(re-frame/reg-sub
+ :visible-todos
+ :<- [:showing]
+ :<- [:todos]
+ (fn [[showing todos] _]
+   (let [filter-fn (case showing
                      :all identity
                      :active (complement :done)
                      :completed :done)]
-     (filter (fn [[id todo]] (filter-fn todo)) (:todos db)))))
+     (filter filter-fn (vals todos)))))
+
+(re-frame/reg-sub
+ :active-todo-count
+ :<- [:todos]
+ (fn [todos _]
+   (->> (vals todos)
+        (filter (complement :done))
+        count)))

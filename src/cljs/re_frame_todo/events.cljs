@@ -10,7 +10,7 @@
 (re-frame/reg-event-db
  :add-todo
  (fn [db [_ new-todo-title]]
-   (let [next-id (inc (last (keys (:todos db))))
+   (let [next-id (-> db :todos keys last inc)
          new-todo {:id next-id :title new-todo-title :done false}]
      (assoc-in db [:todos next-id] new-todo))))
 
@@ -37,6 +37,9 @@
 (re-frame/reg-event-db
  :clear-completed
  (fn [db _]
-   (let [completed-todos (filter (fn [[id todo]] (:done todo)) (:todos db))]
-     (reduce (fn [acc id]
-               (update-in acc [:todos] dissoc id)) db (keys completed-todos)))))
+   (let [todos (:todos db)]
+     (->> (vals todos)
+          (filter :done)
+          (map :id)
+          (reduce dissoc todos)
+          (assoc db :todos)))))
