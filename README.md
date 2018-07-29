@@ -1,6 +1,6 @@
 # re-frame-todo
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
+Basic todo app implemented in ClojureScript with re-frame.
 
 ## Development Mode
 
